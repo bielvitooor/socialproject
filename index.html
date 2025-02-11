@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Faça Bonito - Proteja Nossas Crianças</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #4a148c, #7b1fa2);
+            color: white;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .logo {
+            width: 150px;
+            margin-bottom: 20px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            color: #333;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .options button {
+            display: block;
+            width: 100%;
+            margin: 10px 0;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            background: #4a148c;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .options button:hover {
+            background: #7b1fa2;
+            transform: translateY(-2px);
+        }
+
+        .score {
+            font-size: 1.2em;
+            margin: 20px 0;
+        }
+
+        .explanation {
+            display: none;
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            color: #333;
+        }
+
+        #next-btn {
+            background: #ff4081;
+            padding: 12px 30px;
+            font-size: 1.1em;
+            margin-top: 20px;
+        }
+
+        .campaign-info {
+            margin-top: 40px;
+            font-size: 0.9em;
+        }
+
+        #registration {
+            display: block;
+        }
+
+        #quiz {
+            display: none;
+        }
+
+        #ranking {
+            display: none;
+        }
+
+        #ranking-table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+        }
+
+        #ranking-table th, #ranking-table td {
+            padding: 10px;
+            border: 1px solid #ddd;
+        }
+
+        #ranking-table th {
+            background-color: #4a148c;
+            color: white;
+        }
+
+        .user-result {
+            background-color: #FFEB3B !important;
+            color: #4a148c !important;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <img src="https://www.facabonito.org.br/images/logo.png" alt="Faça Bonito" class="logo">
+        
+        <div id="registration" class="card">
+            <h2>Cadastro do Jogador</h2>
+            <input type="text" id="player-name" placeholder="Seu nome" style="width: 80%; padding: 10px; margin: 10px;">
+            <select id="school" style="width: 80%; padding: 10px; margin: 10px;">
+                <option value="">Selecione sua escola</option>
+                <option value="Escola Municipal Florescer">Escola Municipal Florescer</option>
+                <option value="Colégio Estadual Futuro Brilhante">Colégio Estadual Futuro Brilhante</option>
+                <option value="Instituto Educacional Criança Feliz">Instituto Educacional Criança Feliz</option>
+            </select>
+            <button onclick="startQuiz()" style="background: #4CAF50; padding: 12px 30px;">Iniciar Quiz</button>
+        </div>
+
+        <div id="quiz">
+            <h1>Quiz de Proteção à Criança e Adolescente</h1>
+            <div class="card">
+                <div id="question"></div>
+                <div class="options" id="options"></div>
+                <div class="explanation" id="explanation"></div>
+                <button id="next-btn" onclick="nextQuestion()">Próxima Pergunta</button>
+            </div>
+            <div class="score" id="score">Pontuação: 0</div>
+        </div>
+
+        <div id="ranking" class="card" style="display: none;">
+            <h2>Ranking de Pontuações</h2>
+            <table id="ranking-table">
+                <thead>
+                    <tr>
+                        <th>Posição</th>
+                        <th>Nome</th>
+                        <th>Escola</th>
+                        <th>Pontuação</th>
+                        <th>Data</th>
+                    </tr>
+                </thead>
+                <tbody id="ranking-body"></tbody>
+            </table>
+        </div>
+
+        <div class="campaign-info">
+            <p>18 de Maio - Dia Nacional de Combate ao Abuso e à Exploração Sexual de Crianças e Adolescentes</p>
+            <p>Disque Denúncia: Disque 100</p>
+            <p>Para mais informações: <a href="https://www.facabonito.org.br" style="color: #ff4081;">www.facabonito.org.br</a></p>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                question: "O que caracteriza exploração sexual de crianças e adolescentes?",
+                options: [
+                    "Utilização de menores em atividades sexuais remuneradas",
+                    "Abuso sexual por familiar próximo",
+                    "Conversas inadequadas na internet"
+                ],
+                correct: 0,
+                explanation: "A exploração sexual envolve usar crianças/adolescentes em atividades sexuais com fins comerciais ou troca de vantagens."
+            },
+            {
+                question: "Qual é o principal canal de denúncia no Brasil?",
+                options: [
+                    "Disque 100",
+                    "190 - Polícia Militar",
+                    "181 - Denúncia Anônima"
+                ],
+                correct: 0,
+                explanation: "O Disque 100 é o serviço nacional de denúncia específico para violações de direitos humanos."
+            },
+            {
+                question: "Qual comportamento pode indicar abuso sexual em uma criança?",
+                options: [
+                    "Mudanças bruscas de comportamento",
+                    "Interesse repentino por esportes",
+                    "Dificuldade em lições escolares"
+                ],
+                correct: 0,
+                explanation: "Mudanças comportamentais drásticas são um dos principais sinais de alerta."
+            },
+            {
+                question: "O que a Lei 13.431/2017 estabelece?",
+                options: [
+                    "Sistema de garantia de direitos da criança vítima de violência",
+                    "Aumento de pena para abuso sexual",
+                    "Cadastro nacional de agressores"
+                ],
+                correct: 0,
+                explanation: "Esta lei organiza o sistema de escuta especializada e depoimento especial para proteger a criança."
+            },
+            {
+                question: "Qual é a melhor forma de prevenir abusos sexuais?",
+                options: [
+                    "Educação sexual adequada à idade",
+                    "Monitoramento constante 24 horas",
+                    "Proibição de acesso à internet"
+                ],
+                correct: 0,
+                explanation: "A educação sexual apropriada empodera crianças a reconhecerem e reportarem situações inadequadas."
+            },
+            {
+                question: "O que fazer ao suspeitar de abuso sexual infantil?",
+                options: [
+                    "Denunciar imediatamente às autoridades",
+                    "Confrontar o suspeito pessoalmente",
+                    "Manter sigilo para proteger a criança"
+                ],
+                correct: 0,
+                explanation: "A denúncia imediata às autoridades competentes é crucial para proteger a criança."
+            }
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+        let player = {};
+
+        function startQuiz() {
+            const name = document.getElementById('player-name').value;
+            const school = document.getElementById('school').value;
+            
+            if(!name || !school) {
+                alert('Por favor, preencha seu nome e selecione sua escola!');
+                return;
+            }
+
+            player = {
+                name: name,
+                school: school,
+                score: 0,
+                date: new Date().toLocaleDateString()
+            };
+
+            document.getElementById('registration').style.display = 'none';
+            document.getElementById('quiz').style.display = 'block';
+            showQuestion();
+        }
+
+        function showQuestion() {
+            const question = questions[currentQuestion];
+            document.getElementById('question').innerHTML = `<h2>${question.question}</h2>`;
+            
+            const optionsDiv = document.getElementById('options');
+            optionsDiv.innerHTML = '';
+            
+            question.options.forEach((option, index) => {
+                const button = document.createElement('button');
+                button.innerHTML = option;
+                button.onclick = () => checkAnswer(index);
+                optionsDiv.appendChild(button);
+            });
+        }
+
+        function checkAnswer(selected) {
+            const question = questions[currentQuestion];
+            const buttons = document.querySelectorAll('.options button');
+            
+            buttons.forEach((button, index) => {
+                button.disabled = true;
+                if(index === question.correct) {
+                    button.style.background = '#4CAF50';
+                } else if(index === selected) {
+                    button.style.background = '#f44336';
+                }
+            });
+
+            const explanation = document.getElementById('explanation');
+            explanation.innerHTML = `<strong>Explicação:</strong> ${question.explanation}`;
+            explanation.style.display = 'block';
+            document.getElementById('next-btn').style.display = 'block';
+
+            if(selected === question.correct) {
+                score++;
+                player.score = score;
+                document.getElementById('score').textContent = `Pontuação: ${score}`;
+            }
+        }
+
+        function nextQuestion() {
+            currentQuestion++;
+            if(currentQuestion < questions.length) {
+                resetQuestion();
+                showQuestion();
+            } else {
+                endQuiz();
+            }
+        }
+
+        function resetQuestion() {
+            const explanation = document.getElementById('explanation');
+            explanation.style.display = 'none';
+            document.getElementById('next-btn').style.display = 'none';
+            document.querySelectorAll('.options button').forEach(button => {
+                button.style.background = '#4a148c';
+                button.disabled = false;
+            });
+        }
+
+        function endQuiz() {
+            saveScore();
+            showRanking();
+            document.getElementById('quiz').style.display = 'none';
+            document.getElementById('ranking').style.display = 'block';
+        }
+
+        function saveScore() {
+            const ranking = JSON.parse(localStorage.getItem('ranking') || '[]');
+            ranking.push(player);
+            localStorage.setItem('ranking', JSON.stringify(ranking));
+        }
+
+        function showRanking() {
+            const ranking = JSON.parse(localStorage.getItem('ranking') || '[]');
+            const sortedRanking = ranking.sort((a, b) => b.score - a.score);
+            const tbody = document.getElementById('ranking-body');
+            tbody.innerHTML = '';
+
+            sortedRanking.slice(0, 10).forEach((entry, index) => {
+                const row = document.createElement('tr');
+                if(entry.name === player.name && entry.date === player.date) {
+                    row.className = 'user-result';
+                }
+                row.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td>${entry.name}</td>
+                    <td>${entry.school}</td>
+                    <td>${entry.score}/${questions.length}</td>
+                    <td>${entry.date}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Inicialização correta
+        window.addEventListener('DOMContentLoaded', () => {
+            if(!localStorage.getItem('ranking')) {
+                localStorage.setItem('ranking', JSON.stringify([]));
+            }
+            document.getElementById('registration').style.display = 'block';
+        });
+    </script>
+</body>
+</html>
